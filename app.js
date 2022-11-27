@@ -59,11 +59,11 @@ app.delete("/todos/:id", async function (request, response) {
   // response.send(true)
   const todo = await Todo.findByPk(request.params.id);
   try {
-    const deletedTodo = await todo.deleteTodo();
-    return response.json(deletedTodo);
+    await todo.deleteTodo();
+    return response.json(true);
   } catch (error) {
     console.log(error);
-    return response.status(422).json(error);
+    return response.status(422).json(false);
   }
 });
 

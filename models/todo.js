@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     deleteTodo() {
-      return this.destroy();
+      this.destroy();
     }
   }
   Todo.init(

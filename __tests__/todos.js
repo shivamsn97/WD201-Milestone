@@ -80,10 +80,8 @@ describe("Todo Application", function () {
     const parsedResponse = JSON.parse(response.text);
     const todoID = parsedResponse.id;
 
-    await agent.delete(`/todos/${todoID}`);
-    // check if the todo is deleted
-    const getResponse = await agent.get(`/todos/${todoID}`);
-    const parsedGetResponse = JSON.parse(getResponse.text);
-    expect(parsedGetResponse).toBe(null);
+    const deleteResponse = await agent.delete(`/todos/${todoID}`);
+    const parsedDeleteResponse = JSON.parse(deleteResponse.text);
+    expect(parsedDeleteResponse).toBe(true);
   });
 });
