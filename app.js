@@ -8,6 +8,11 @@ app.use(bodyParser.json());
 
 app.set("view engine", "ejs");
 
+app.get("/healthz", (req, res) => {
+  // This is a health check endpoint for render which always returns 200
+  res.status(200).send("OK");
+});
+
 app.get("/", async (request, response) => {
   const allTodos = await Todo.getTodos();
   if (request.accepts("html")) {
