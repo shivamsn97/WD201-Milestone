@@ -8,15 +8,12 @@
     <title>Document</title>
 </head>
 <body>
-    <%- include('header.ejs') %>
-    <table>
-        <% for (let index = 0; index < allTodos.length; index++) { %>
-            <tr>
-                <td>
-                    <%= allTodos[index].title %>
-                </td>
-            </tr>
-        <% } %>
-    </table>
+    <header>
+        <%- include('header.ejs') %>
+    </header>
+    <%- include('todos.ejs') %>
+    <footer>
+        <%- include('footer.ejs') %>
+    </footer>
 </body>
 </html>
