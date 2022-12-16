@@ -7,6 +7,22 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="./css/styles.css">
     <title>To-Do Manager</title>
+    <script>
+        function updateTodo(id) {
+            fetch(`/todos/${id}/markAsCompleted`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then((res) => {
+                if (res.ok) {
+                    window.location.reload()
+                }
+            }).catch((err) => {
+                console.log(err)
+            })
+        }
+    </script>
 </head>
 <body>
     <div class="grid grid-cols-6">
