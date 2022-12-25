@@ -21,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
       return this.update({ completed: true });
     }
 
+    setCompletionStatus(status) {
+      return this.update({ completed: status });
+    }
+
     static async getTodos() {
       return await this.findAll();
     }
@@ -29,32 +33,73 @@ module.exports = (sequelize, DataTypes) => {
       await this.destroy();
     }
 
-    static async overdue() {
-      return await Todo.findAll({
-        where: {
-          dueDate: {
-            [Op.lt]: new Date().toLocaleDateString("en-CA"),
+    static async overdue(includeCompleted = false) {
+      if (includeCompleted) {
+        return await Todo.findAll({
+          where: {
+            dueDate: {
+              [Op.lt]: new Date().toLocaleDateString("en-CA"),
+            },
           },
-        },
-      });
+        });
+      } else {
+        return await Todo.findAll({
+          where: {
+            dueDate: {
+              [Op.lt]: new Date().toLocaleDateString("en-CA"),
+            },
+            completed: false,
+          },
+        });
+      }
     }
 
-    static async dueToday() {
-      return await Todo.findAll({
-        where: {
-          dueDate: {
-            [Op.eq]: new Date().toLocaleDateString("en-CA"),
+    static async dueToday(includeCompleted = false) {
+      if (includeCompleted) {
+        return await Todo.findAll({
+          where: {
+            dueDate: {
+              [Op.eq]: new Date().toLocaleDateString("en-CA"),
+            },
           },
-        },
-      });
+        });
+      } else {
+        return await Todo.findAll({
+          where: {
+            dueDate: {
+              [Op.eq]: new Date().toLocaleDateString("en-CA"),
+            },
+            completed: false,
+          },
+        });
+      }
     }
 
-    static async dueLater() {
+    static async dueLater(includeCompleted = false) {
+      if (includeCompleted) {
+        return await Todo.findAll({
+          where: {
+            dueDate: {
+              [Op.gt]: new Date().toLocaleDateString("en-CA"),
+            },
+          },
+        });
+      } else {
+        return await Todo.findAll({
+          where: {
+            dueDate: {
+              [Op.gt]: new Date().toLocaleDateString("en-CA"),
+            },
+            completed: false,
+          },
+        });
+      }
+    }
+
+    static async completed() {
       return await Todo.findAll({
         where: {
-          dueDate: {
-            [Op.gt]: new Date().toLocaleDateString("en-CA"),
-          },
+          completed: true,
         },
       });
     }
