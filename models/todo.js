@@ -14,8 +14,17 @@ module.exports = (sequelize, DataTypes) => {
       Todo.belongsTo(models.User, { foreignKey: "userId" });
     }
 
-    static addTodo({ title, dueDate }) {
-      return this.create({ title: title, dueDate: dueDate, completed: false });
+    static addTodo({ title, dueDate, userId }) {
+      return this.create({
+        title: title,
+        dueDate: dueDate,
+        completed: false,
+        userId: userId,
+      });
+    }
+
+    static findTodoById({ id, userId }) {
+      return this.findOne({ where: { id: id, userId: userId } });
     }
 
     markAsCompleted() {
@@ -34,13 +43,14 @@ module.exports = (sequelize, DataTypes) => {
       await this.destroy();
     }
 
-    static async overdue(includeCompleted = false) {
+    static async overdue(userId, includeCompleted = false) {
       if (includeCompleted) {
         return await Todo.findAll({
           where: {
             dueDate: {
               [Op.lt]: new Date().toLocaleDateString("en-CA"),
             },
+            userId,
           },
         });
       } else {
@@ -49,19 +59,21 @@ module.exports = (sequelize, DataTypes) => {
             dueDate: {
               [Op.lt]: new Date().toLocaleDateString("en-CA"),
             },
+            userId,
             completed: false,
           },
         });
       }
     }
 
-    static async dueToday(includeCompleted = false) {
+    static async dueToday(userId, includeCompleted = false) {
       if (includeCompleted) {
         return await Todo.findAll({
           where: {
             dueDate: {
               [Op.eq]: new Date().toLocaleDateString("en-CA"),
             },
+            userId,
           },
         });
       } else {
@@ -70,19 +82,21 @@ module.exports = (sequelize, DataTypes) => {
             dueDate: {
               [Op.eq]: new Date().toLocaleDateString("en-CA"),
             },
+            userId,
             completed: false,
           },
         });
       }
     }
 
-    static async dueLater(includeCompleted = false) {
+    static async dueLater(userId, includeCompleted = false) {
       if (includeCompleted) {
         return await Todo.findAll({
           where: {
             dueDate: {
               [Op.gt]: new Date().toLocaleDateString("en-CA"),
             },
+            userId,
           },
         });
       } else {
@@ -91,16 +105,18 @@ module.exports = (sequelize, DataTypes) => {
             dueDate: {
               [Op.gt]: new Date().toLocaleDateString("en-CA"),
             },
+            userId,
             completed: false,
           },
         });
       }
     }
 
-    static async completed() {
+    static async completed(userId) {
       return await Todo.findAll({
         where: {
           completed: true,
+          userId,
         },
       });
     }
