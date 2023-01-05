@@ -11,6 +11,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
 const connectEnsureLogin = require("connect-ensure-login");
 const bcrypt = require("bcrypt");
+const flash = require("connect-flash");
 const saltRounds = 10;
 
 app.use(bodyParser.json());
@@ -43,13 +44,13 @@ passport.use(
       try {
         User.findOne({ where: { email: email } }).then((user) => {
           if (!user) {
-            return done("Incorrect email");
+            return done(null, false, { message: "Incorrect email" });
           }
           bcrypt.compare(password, user.password, (err, res) => {
             if (res) {
               return done(null, user);
             } else {
-              return done("Incorrect password");
+              return done(null, false, { message: "Incorrect password" });
             }
           });
         });
@@ -74,6 +75,15 @@ passport.deserializeUser(async (id, done) => {
     .catch((err) => {
       done(err, null);
     });
+});
+
+app.set("views", path.join(__dirname, "views"));
+app.use(flash());
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use(function (request, response, next) {
+  response.locals.messages = request.flash();
+  next();
 });
 
 app.get("/", (request, response) => {
@@ -117,8 +127,6 @@ app.get(
   }
 );
 
-app.use(express.static(path.join(__dirname, "public")));
-
 app.get("/signup", (request, response) => {
   response.render("signup", {
     csrfToken: request.csrfToken(),
@@ -147,7 +155,8 @@ app.post("/users", async (request, response) => {
       }
     });
   } catch (error) {
-    console.log(error);
+    request.flash("error", "Email already exists");
+    response.redirect("/signup");
   }
 });
 
@@ -160,7 +169,10 @@ app.get("/login", (request, response) => {
 
 app.post(
   "/session",
-  passport.authenticate("local", { failureRedirect: "/login" }),
+  passport.authenticate("local", {
+    failureRedirect: "/login",
+    failureFlash: true,
+  }),
   (request, response) => {
     response.redirect("/todos");
   }
