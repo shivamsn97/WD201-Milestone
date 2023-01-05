@@ -138,6 +138,10 @@ app.post("/users", async (request, response) => {
   const firstName = request.body.firstName;
   const lastName = request.body.lastName;
   const email = request.body.email;
+  if (!firstName || !email || !request.body.password) {
+    request.flash("error", "Please fill in all fields");
+    return response.redirect("/signup");
+  }
   const password = await bcrypt.hash(request.body.password, saltRounds);
   try {
     const user = await User.create({
@@ -205,6 +209,10 @@ app.post(
   "/todos",
   connectEnsureLogin.ensureLoggedIn(),
   async function (request, response) {
+    if (!request.body.title || !request.body.dueDate) {
+      request.flash("error", "Please fill in all fields");
+      return response.redirect("/todos");
+    }
     try {
       await Todo.addTodo({
         title: request.body.title,
